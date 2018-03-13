@@ -12,42 +12,58 @@ class MyApp extends StatelessWidget {
           title: new Text('Top Lakes'),
         ),
         body: new Center(
-          child: new TapboxA(),
+          child: new ParentWidget(),
         ),
-      ),
-    );
+    ),);
   }
 }
 
-class TapboxA extends StatefulWidget {
-  TapboxA({Key key}) : super(key: key);
+class ParentWidget extends StatefulWidget {
   @override
-    _TapboxState createState() => new _TapboxState();
+    _ParentWidgetState createState() => new _ParentWidgetState();
 }
 
-class _TapboxState extends State<TapboxA>                   {
+class _ParentWidgetState extends State<ParentWidget> {
   bool _active = false;
+   void _handleTapboxChanged(bool newValue){
+     setState((){
+       _active = newValue;
+     });
+   }
+  @override
+    Widget build(BuildContext context) {
+      return new TapBoxB(
+        active: _active,
+        onChange: _handleTapboxChanged,
+      );
+    }
 
-  void _handleTap() {
-    setState(() {
-      _active = !_active;
-    });
+}
+
+class TapBoxB extends StatelessWidget {
+  TapBoxB({ Key key, this.active: false, this.onChange}) : super(key: key);
+  final bool active;
+  final ValueChanged<bool> onChange;
+
+  void _handleChange(){
+    onChange(!active);
   }
+
   @override
     Widget build(BuildContext context) {
       return new GestureDetector(
-        onTap: _handleTap,
+        onTap: _handleChange,
         child: new Container(
           child: new Center(
             child: new Text(
-              _active ? 'Active' : 'Inactive',
-              style: new TextStyle(fontSize:  32.0, color: Colors.white),
+              active? 'Active': 'Inactive',
+              style: new TextStyle(fontSize: 32.0, color: Colors.white),
             ),
           ),
           width: 200.0,
           height: 200.0,
           decoration: new BoxDecoration(
-            color: _active? Colors.lightGreen[700] : Colors.grey[600],
+            color: active ? Colors.lightGreen[700] : Colors.grey[600],
           ),
         ),
       );
