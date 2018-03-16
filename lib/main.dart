@@ -1,56 +1,61 @@
 import 'package:flutter/material.dart';
 
 void main(){
-  runApp(new SampleApp());
+  runApp(new FadeAppTest());
 }
 
-class SampleApp extends StatelessWidget {
+class FadeAppTest extends StatelessWidget {
+
   @override
     Widget build(BuildContext context) {
       return new MaterialApp(
-        title: 'Sample App',
+        title: 'Fade Demo',
         theme: new ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.blue
         ),
-        home: new SampleAppPage(),
+        home: new FadeTest(title: 'Fade Demo',),
       );
     }
 }
 
-class SampleAppPage extends StatefulWidget {
+class FadeTest extends StatefulWidget {
+  FadeTest({Key key, this.title}): super(key: key); 
+  final String title;
   @override
-    _SampleAppPage createState() => new _SampleAppPage();
+    _FadeTestState createState() => new _FadeTestState();
 }
 
-class _SampleAppPage extends State<SampleAppPage> {
-  bool toggle = true;
-
-  void _toggle(){
-    setState((){
-      toggle = !toggle;
-    });
-  }
-
-  _getToggleChild(){
-    if(toggle){
-      return new Text('Toggle One');
-    } else {
-      return new MaterialButton(onPressed: null, child: new Text('Toggle Two'),);
+class _FadeTestState extends State<FadeTest> with TickerProviderStateMixin {
+  AnimationController controler;
+  CurvedAnimation curve;
+  @override
+    void initState() {
+      controler = new AnimationController(duration: const Duration(milliseconds: 2000), vsync: this);
+      curve = new CurvedAnimation(parent: controler, curve: Curves.easeIn);
+      super.initState();
     }
-  }
   @override
     Widget build(BuildContext context) {
       return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Sample App'),
+          title: new Text(widget.title),
         ),
         body: new Center(
-          child: _getToggleChild(),
+          child: new Container(
+            child: new FadeTransition(
+              opacity: curve,
+              child: new FlutterLogo(
+                size: 100.0,
+              ),
+            ),
+          ),
         ),
         floatingActionButton: new FloatingActionButton(
-          onPressed: _toggle,
-          tooltip: 'Update Text',
-          child: new Icon(Icons.update),
+          tooltip: 'Fade',
+          child: new Icon(Icons.brush),
+          onPressed: (){
+            controler.forward();
+          }
         ),
       );
     }
