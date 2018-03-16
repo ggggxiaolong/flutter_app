@@ -1,92 +1,57 @@
 import 'package:flutter/material.dart';
 
-class Product {
-  const Product({this.name});
-  final String name;
+void main(){
+  runApp(new SampleApp());
 }
 
-typedef void CartCHangeCallback(Product product, bool inCart);
-
-class ShoppingListItem extends StatelessWidget {
-  ShoppingListItem({Product product, this.inCart, this.onCartChanged})
-    : product = product, super(key: new ObjectKey(product));
-  final Product product;
-  final bool inCart;
-  final CartCHangeCallback onCartChanged;
-
-  Color _getColor(BuildContext context){
-    return inCart ? Colors.black45 : Theme.of(context).primaryColor;
-  }
-
-  TextStyle _getTextStyle(BuildContext context){
-    if(!inCart) return null;
-    return new TextStyle(
-      color: Colors.black54,
-      decoration: TextDecoration.lineThrough,
-    );
-  }
-
+class SampleApp extends StatelessWidget {
   @override
     Widget build(BuildContext context) {
-      return new ListTile(
-        onTap: (){ onCartChanged(product, !inCart);},
-        leading: new CircleAvatar(
-          backgroundColor: _getColor(context),
-          child: new Text(product.name[0]),
+      return new MaterialApp(
+        title: 'Sample App',
+        theme: new ThemeData(
+          primarySwatch: Colors.blue,
         ),
-        title: new Text(product.name, style: _getTextStyle(context),),
+        home: new SampleAppPage(),
       );
     }
 }
 
-class ShoppongList extends StatefulWidget {
-  ShoppongList({Key key, this.products}): super(key: key);
-  final List<Product> products;
-
+class SampleAppPage extends StatefulWidget {
   @override
-    _ShoppingListState createState() => new _ShoppingListState();
+    _SampleAppPage createState() => new _SampleAppPage();
 }
 
-class _ShoppingListState extends State<ShoppongList> {
-  Set<Product> _shoppingCart = new Set<Product>();
+class _SampleAppPage extends State<SampleAppPage> {
+  bool toggle = true;
 
-  void _handleCartChange(Product product, bool inCart){
+  void _toggle(){
     setState((){
-      if (inCart)
-        _shoppingCart.add(product);
-      else 
-        _shoppingCart.remove(product);
-    }); 
+      toggle = !toggle;
+    });
+  }
+
+  _getToggleChild(){
+    if(toggle){
+      return new Text('Toggle One');
+    } else {
+      return new MaterialButton(onPressed: null, child: new Text('Toggle Two'),);
+    }
   }
   @override
     Widget build(BuildContext context) {
       return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Shopping List'),
+          title: new Text('Sample App'),
         ),
-        body: new ListView(
-          padding: new EdgeInsets.symmetric(vertical: 8.0),
-          children: widget.products.map((Product product){
-            return new ShoppingListItem(
-              product: product,
-              inCart: _shoppingCart.contains(product),
-              onCartChanged: _handleCartChange,
-            );
-          }).toList(),
+        body: new Center(
+          child: _getToggleChild(),
+        ),
+        floatingActionButton: new FloatingActionButton(
+          onPressed: _toggle,
+          tooltip: 'Update Text',
+          child: new Icon(Icons.update),
         ),
       );
     }
 }
-
- void main(){
-   runApp(new MaterialApp(
-     title: 'Shopping App',
-     home: new ShoppongList(
-       products: <Product>[
-         new Product(name: "Eggs"),
-         new Product(name: 'Flour'),
-         new Product(name: 'Chocolate chips'),
-       ],
-     ),
-   ));
- }
