@@ -1,62 +1,45 @@
 import 'package:flutter/material.dart';
 
-void main(){
-  runApp(new FadeAppTest());
-}
-
-class FadeAppTest extends StatelessWidget {
-
-  @override
-    Widget build(BuildContext context) {
-      return new MaterialApp(
-        title: 'Fade Demo',
-        theme: new ThemeData(
-          primarySwatch: Colors.blue
-        ),
-        home: new FadeTest(title: 'Fade Demo',),
-      );
+class SignaturePainter extends CustomPainter {
+  SignaturePainter(this.points);
+  final List<Offset> points;
+  void paint(Canvas canvas, Size size) {
+    var paint = new Paint()
+      ..color = Colors.black
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 5.0;
+    for (int i = 0; i < points.length - 1; i++) {
+      if (points[i] != null && points[i + 1] != null)
+        canvas.drawLine(points[i], points[i + 1], paint);
     }
+  }
+  bool shouldRepaint(SignaturePainter other) => other.points != points;
 }
-
-class FadeTest extends StatefulWidget {
-  FadeTest({Key key, this.title}): super(key: key); 
-  final String title;
-  @override
-    _FadeTestState createState() => new _FadeTestState();
+class Signature extends StatefulWidget {
+  SignatureState createState() => new SignatureState();
 }
-
-class _FadeTestState extends State<FadeTest> with TickerProviderStateMixin {
-  AnimationController controler;
-  CurvedAnimation curve;
-  @override
-    void initState() {
-      controler = new AnimationController(duration: const Duration(milliseconds: 2000), vsync: this);
-      curve = new CurvedAnimation(parent: controler, curve: Curves.easeIn);
-      super.initState();
-    }
-  @override
-    Widget build(BuildContext context) {
-      return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(widget.title),
-        ),
-        body: new Center(
-          child: new Container(
-            child: new FadeTransition(
-              opacity: curve,
-              child: new FlutterLogo(
-                size: 100.0,
-              ),
-            ),
-          ),
-        ),
-        floatingActionButton: new FloatingActionButton(
-          tooltip: 'Fade',
-          child: new Icon(Icons.brush),
-          onPressed: (){
-            controler.forward();
-          }
-        ),
-      );
-    }
+class SignatureState extends State<Signature> {
+  List<Offset> _points = <Offset>[];
+  Widget build(BuildContext context) {
+    return new Container(
+      child: new GestureDetector(
+      onPanUpdate: (DragUpdateDetails details) {
+        setState(() {
+          RenderBox referenceBox = context.findRenderObject();
+          Offset localPosition =
+          referenceBox.globalToLocal(details.globalPosition);
+          _points = new List.from(_points)..add(localPosition);
+        });
+      },
+      onPanEnd: (DragEndDetails details) => _points.add(null),
+      child: new CustomPaint(painter: new SignaturePainter(_points), size: Size.infinite,),
+    ),
+    ) 
+    ;
+  }
 }
+class DemoApp extends StatelessWidget {
+  Widget build(BuildContext context) => new Scaffold(body: new Signature());
+}
+void main() => runApp(new MaterialApp(
+  home:new DemoApp() ));
