@@ -1,51 +1,40 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(new SnackBarDemo());
 
-class MyApp extends StatelessWidget {
-  final _appName = 'Custome Themes';
+class SnackBarDemo extends StatelessWidget {
   @override
     Widget build(BuildContext context) {
       return new MaterialApp(
-        title: _appName,
-        theme: new ThemeData(
-          brightness: Brightness.dark,
-          primaryColor: Colors.lightBlue[800],
-          accentColor: Colors.cyan[600],
-        ),
-        home: new MyHomePage(
-          title: _appName
+        title: 'SnackBar Demo',
+        home: new Scaffold(
+          appBar: new AppBar(
+            title: new Text('SnackBar Demo'),
+          ),
+          body: new SnackBarPage(),
         ),
       );
     }
 }
 
-class MyHomePage extends StatelessWidget {
-  final String title;
-
-  MyHomePage({Key key,  this.title}): super(key: key);
-
+class SnackBarPage extends StatelessWidget {
   @override
     Widget build(BuildContext context) {
-      return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(title),
-        ),
-        body: new Center(
-          child: new Container(
-            color: Theme.of(context).accentColor,
-            child: new Text(
-              'Text with a background color',
-              style: Theme.of(context).textTheme.title,
-            ),
-          ),
-        ),
-        floatingActionButton: new Theme(
-          data: Theme.of(context).copyWith(accentColor: Colors.yellow),
-          child: new FloatingActionButton(
-            onPressed: null,
-            child: new Icon(Icons.add),
-          ),
+      return new Center(
+        child: new RaisedButton(
+          child: new Text('Show SnackBar'),
+          onPressed: (){
+            final SnackBar snackBar = new SnackBar(
+              content: new Text('Yay! A SnackBar!'),
+              action: new SnackBarAction(
+                label: 'Undo',
+                onPressed:(){
+                  print('Undo');
+                },
+              ),
+            );
+            Scaffold.of(context).showSnackBar(snackBar);
+          },
         ),
       );
     }
