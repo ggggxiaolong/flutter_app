@@ -1,46 +1,50 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(new MaterialApp(
-    title: 'Fade in sample',
-    home: new SampleApp(),
-  ));
-}
+void main() => runApp(new MyApp());
 
-class SampleApp extends StatefulWidget{
-  @override _SampleAppState createState() => new _SampleAppState();
-}
-
-class _SampleAppState extends State<SampleApp> with TickerProviderStateMixin{
-  AnimationController controller ;
-  CurvedAnimation curve;
-
+class MyApp extends StatelessWidget {
+  final _appName = 'Custome Themes';
   @override
-    void initState() {
-      super.initState();
-      controller = new AnimationController(duration: const Duration(milliseconds: 2000), vsync: this);
-      curve = new CurvedAnimation(parent: controller, curve: Curves.easeIn);
+    Widget build(BuildContext context) {
+      return new MaterialApp(
+        title: _appName,
+        theme: new ThemeData(
+          brightness: Brightness.dark,
+          primaryColor: Colors.lightBlue[800],
+          accentColor: Colors.cyan[600],
+        ),
+        home: new MyHomePage(
+          title: _appName
+        ),
+      );
     }
+}
+
+class MyHomePage extends StatelessWidget {
+  final String title;
+
+  MyHomePage({Key key,  this.title}): super(key: key);
 
   @override
     Widget build(BuildContext context) {
       return new Scaffold(
-        appBar: new AppBar(title: new Text("Fade in")),
+        appBar: new AppBar(
+          title: new Text(title),
+        ),
         body: new Center(
-          child: new GestureDetector(
-            child: new RotationTransition(
-              turns: curve,
-              child: new FlutterLogo(
-                size: 200.0,
-              ),
+          child: new Container(
+            color: Theme.of(context).accentColor,
+            child: new Text(
+              'Text with a background color',
+              style: Theme.of(context).textTheme.title,
             ),
-            onDoubleTap: (){
-              if (controller.isCompleted) {
-                controller.reverse();
-              } else {
-                controller.forward();
-              }
-            },
+          ),
+        ),
+        floatingActionButton: new Theme(
+          data: Theme.of(context).copyWith(accentColor: Colors.yellow),
+          child: new FloatingActionButton(
+            onPressed: null,
+            child: new Icon(Icons.add),
           ),
         ),
       );
