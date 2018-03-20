@@ -1,40 +1,34 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(new SnackBarDemo());
+void main() => runApp(new TabBarDemo());
 
-class SnackBarDemo extends StatelessWidget {
+class TabBarDemo extends StatelessWidget {
+
   @override
     Widget build(BuildContext context) {
       return new MaterialApp(
-        title: 'SnackBar Demo',
-        home: new Scaffold(
-          appBar: new AppBar(
-            title: new Text('SnackBar Demo'),
-          ),
-          body: new SnackBarPage(),
-        ),
-      );
-    }
-}
-
-class SnackBarPage extends StatelessWidget {
-  @override
-    Widget build(BuildContext context) {
-      return new Center(
-        child: new RaisedButton(
-          child: new Text('Show SnackBar'),
-          onPressed: (){
-            final SnackBar snackBar = new SnackBar(
-              content: new Text('Yay! A SnackBar!'),
-              action: new SnackBarAction(
-                label: 'Undo',
-                onPressed:(){
-                  print('Undo');
-                },
+        title: 'TabBar Demo',
+        home: new DefaultTabController(
+          length: 3,
+          child: new Scaffold(
+            appBar: new AppBar(
+              bottom: new TabBar(
+                tabs: <Widget>[
+                  new Tab(icon: new Icon(Icons.directions_car),),
+                  new Tab(icon: new Icon(Icons.directions_transit),),
+                  new Tab(icon: new Icon(Icons.directions_bike),)
+                ],
               ),
-            );
-            Scaffold.of(context).showSnackBar(snackBar);
-          },
+              title: new Text('Tabs Demo'),
+            ),
+            body: new TabBarView(
+              children: <Widget>[
+                new Icon(Icons.directions_car),
+                new Icon(Icons.directions_transit),
+                new Icon(Icons.directions_bike)
+              ],
+            ),
+          ),
         ),
       );
     }
