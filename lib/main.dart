@@ -1,22 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-void main() => runApp(new ImageDemo());
+void main() => runApp(new BasicList());
 
-class ImageDemo extends StatelessWidget {
+class BasicList extends StatelessWidget {
 
   @override
     Widget build(BuildContext context) {
       return new MaterialApp(
-        title: 'TabBar Demo',
+        title: 'List Demo',
         home: new Scaffold(
           appBar: new AppBar(
-            title: new Text('Web Image'),
+            title: new Text('Basic List'),
           ),
-          body: new CachedNetworkImage(
-            imageUrl: 'https://github.com/flutter/website/blob/master/_includes/code/layout/lakes/images/lake.jpg?raw=true',
-            placeholder: new Center(child: new CircularProgressIndicator()),
-            errorWidget: new Icon(Icons.error),
+          body: new Container(
+            margin: new EdgeInsets.symmetric(vertical: 20.0),
+            height: 200.0,
+            child: new ListView(
+              scrollDirection: Axis.horizontal,
+              children: <Widget>[
+                new Container(
+                  width: 160.0,
+                  color: Colors.red,
+                ),
+                new Container(
+                  width: 160.0,
+                  color: Colors.blue,
+                ),
+                new Container(
+                  width: 160.0,
+                  color: Colors.green,
+                ),
+                new Container(
+                  width: 160.0,
+                  color: Colors.yellow,
+                ),
+                new Container(
+                  width: 160.0,
+                  color: Colors.orange,
+                )
+              ],
+            ),
           ),
         ),
       );
