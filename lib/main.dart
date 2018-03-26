@@ -1,58 +1,29 @@
 import 'package:flutter/material.dart';
 
-abstract class ListItem {}
+void main() => runApp(new GrideApp());
 
-class HeadingItem implements ListItem {
-  final String heading;
-
-  HeadingItem(this.heading);
-}
-
-class MessageItem implements ListItem {
-  final String sender;
-  final String body;
-
-  MessageItem(this.sender, this.body);
-}
-
-class MixedApp extends StatelessWidget {
-  final List<ListItem> items;
-  MixedApp({Key key, this.items}) : super(key: key);
-
+class GrideApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-        title: "Mixed List",
+    Widget build(BuildContext context) {
+      return new MaterialApp(
+        title: "Gride List",
         home: new Scaffold(
           appBar: new AppBar(
-            title: new Text("Mixed List"),
+            title: new Text("Gride App"),
           ),
-          body: new ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index];
-              if (item is HeadingItem) {
-                return new ListTile(
-                  title: new Text(
-                    item.heading,
-                    style: Theme.of(context).textTheme.headline,
-                  ),
-                );
-              } else if (item is MessageItem) {
-                return new ListTile(
-                  title: new Text(item.sender),
-                  subtitle: new Text(item.body),
-                );
-              }
-            },
+          body: new GridView.count(
+            crossAxisCount: 2,
+            children: new List.generate(
+              100, 
+              (i) => new Center(
+                child: new Text(
+                  "Item $i",
+                  style: Theme.of(context).textTheme.headline,
+                ),
+              )
+            ),
           ),
-        ));
-  }
+        ),
+      );
+    }
 }
-
-void main() => runApp(new MixedApp(
-    items: new List<ListItem>.generate(
-        1000,
-        (i) => i % 6 == 0
-            ? new HeadingItem("Heading $i")
-            : new MessageItem("Sender $i", "Message $i"))));
