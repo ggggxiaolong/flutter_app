@@ -1,46 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 void main() => runApp(new MaterialApp(
     title: "Dismiss Items",
-    home:  new FirstScreen()));
+    home: new TodoScreen(
+      todos: new List.generate(
+          20,
+          (i) => new Todo(
+              'Todo $i', 'A description of what needs to be done for Todo $i')),
+    )));
 
-class FirstScreen extends StatelessWidget {
+class Todo {
+  final String title;
+  final String description;
+  Todo(this.title, this.description);
+}
+
+class TodoScreen extends StatelessWidget {
+  final List<Todo> todos;
+  TodoScreen({Key key, this.todos}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("First Screen"),
+        title: new Text("Todos"),
       ),
-      body: new Center(
-        child: new Center(
-          child: new RaisedButton(
-            child: new Text("Launch new Screen"),
-            onPressed: (){
-              Navigator.push(context, 
-              new MaterialPageRoute(builder: (context) => new SecondScreen()));
+      body: new ListView.builder(
+        itemCount: todos.length,
+        itemBuilder: (context, index) {
+          return new ListTile(
+            title: new Text(todos[index].title),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                    builder: (context) => new DetailScreen(todo: todos[index]),
+                  ));
             },
-          ),
-        ),
+          );
+        },
       ),
-    ); 
+    );
   }
 }
 
-class SecondScreen extends StatelessWidget {
+class DetailScreen extends StatelessWidget {
+  final Todo todo;
+  DetailScreen({Key key, this.todo}) : super(key: key);
   @override
-    Widget build(BuildContext context) {
-      return new Scaffold(
-        appBar: new AppBar(
-          title: new Text("Second Screen"),
-        ),
-        body: new Center(
-          child: new RaisedButton(
-            onPressed: (){
-              Navigator.pop(context);
-            },
-            child: new Text("Go back!"),
-          ),
-        ),
-      );
-    }
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text("${todo.title}"),
+      ),
+      body: new Padding(
+        padding: new EdgeInsets.all(16.0),
+        child: new Text("${todo.description}"),
+      ),
+    );
+  }
 }
