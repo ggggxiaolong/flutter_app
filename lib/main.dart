@@ -1,61 +1,75 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 void main() => runApp(new MaterialApp(
-    title: "Dismiss Items",
-    home: new TodoScreen(
-      todos: new List.generate(
-          20,
-          (i) => new Todo(
-              'Todo $i', 'A description of what needs to be done for Todo $i')),
-    )));
+      title: "Return date",
+      home: new HomeScreen(),
+    ));
 
-class Todo {
-  final String title;
-  final String description;
-  Todo(this.title, this.description);
-}
-
-class TodoScreen extends StatelessWidget {
-  final List<Todo> todos;
-  TodoScreen({Key key, this.todos}) : super(key: key);
+class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Todos"),
+        title: new Text("Returning Data Demo"),
       ),
-      body: new ListView.builder(
-        itemCount: todos.length,
-        itemBuilder: (context, index) {
-          return new ListTile(
-            title: new Text(todos[index].title),
-            onTap: () {
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                    builder: (context) => new DetailScreen(todo: todos[index]),
-                  ));
-            },
-          );
-        },
-      ),
+      body: new SelectionButton(),
     );
   }
 }
 
-class DetailScreen extends StatelessWidget {
-  final Todo todo;
-  DetailScreen({Key key, this.todo}) : super(key: key);
+class SelectionButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Center(
+        child: new RaisedButton(
+      onPressed: () {
+        _navigateAndDisplaySelection(context);
+      },
+      child: new Text("Pick an option, any option"),
+    ));
+  }
+
+  _navigateAndDisplaySelection(BuildContext context) async {
+    final result = await Navigator.push(context,
+        new MaterialPageRoute(builder: (context) => new SelectionScreen()));
+
+    Scaffold.of(context).showSnackBar(new SnackBar(
+          content: new Text("$result"),
+        ));
+  }
+}
+
+class SelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("${todo.title}"),
+        title: new Text("Pick an option"),
       ),
-      body: new Padding(
-        padding: new EdgeInsets.all(16.0),
-        child: new Text("${todo.description}"),
+      body: new Center(
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new RaisedButton(
+                onPressed: () {
+                  Navigator.pop(context, 'Yep!');
+                },
+                child: new Text("Yep!"),
+              ),
+            ),
+            new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new RaisedButton(
+                onPressed: () {
+                  Navigator.pop(context, "Nope!");
+                },
+                child: new Text('Nope!'),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
