@@ -1,44 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-void main() => runApp(new MaterialApp(
-      title: "Opacity Demo",
-      home: new HomePage(title: "Opacity Demo",),
-    ));
+import 'dart:async';
+import 'dart:convert';
 
-class HomePage extends StatefulWidget {
+class Post {
+  final int userId;
+  final int id;
   final String title;
-  HomePage({Key key, this.title}):super(key: key);
-  @override _StateHomePage createState() => new _StateHomePage();
+  final String body;
+
+  Post({this.userId, this.id, this.title, this.body});
+
+  factory Post.fromJson(Map<String, dynamic> json) {
+    return new Post(
+      userId: json['userId'],
+      id: json['id'],
+      title: json['title'],
+      body: json['body'],
+    );
+  }
 }
 
-class _StateHomePage extends State<HomePage> {
-  bool _visible = true;
+Future<Post> fetchPost() async {
+  final response =
+      await http.get('https://jsonplaceholder.typicode.com/posts/1');
+  final json = JSON.decode(response.body);
+  return new Post.fromJson(json);
+}
+
+void main() => runApp(new MyApp());
+
+class MyApp extends StatelessWidget {
   @override
-    Widget build(BuildContext context) {
-      return new Scaffold(
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: 'Fetch Data Example',
+      theme: new ThemeData(
+        primaryColor: Colors.blue,
+      ),
+      home: new Scaffold(
         appBar: new AppBar(
-          title: new Text(widget.title),
+          title: new Text('Fetch Data Example'),
         ),
         body: new Center(
-          child: new AnimatedOpacity(
-            opacity: _visible ? 1.0 : 0.0,
-            duration: new Duration(milliseconds: 500),
-            child: new Container(
-              width: 200.0,
-              height: 200.0,
-              color: Colors.green,
-            ),
+          child: new FutureBuilder<Post>(
+            future: fetchPost(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return new Text(snapshot.data.title);
+              } else if (snapshot.hasError) {
+                return new Text("${snapshot.error}");
+              }
+              return new CircularProgressIndicator();
+            },
           ),
         ),
-        floatingActionButton: new FloatingActionButton(
-          onPressed: (){
-            setState((){
-              _visible = !_visible;
-            });
-          },
-          tooltip: "Toggle Opacity",
-          child: new Icon(Icons.flip),
-        ),
-      );
-    }
+      ),
+    );
+  }
 }
