@@ -1,53 +1,43 @@
 import 'package:flutter/material.dart';
 
 void main() => runApp(new MaterialApp(
-      title: "Transition Demo",
-      home: new MainScreen(),
+      title: "Opacity Demo",
+      home: new HomePage(title: "Opacity Demo",),
     ));
 
-class MainScreen extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  final String title;
+  HomePage({Key key, this.title}):super(key: key);
+  @override _StateHomePage createState() => new _StateHomePage();
+}
+
+class _StateHomePage extends State<HomePage> {
+  bool _visible = true;
   @override
     Widget build(BuildContext context) {
       return new Scaffold(
         appBar: new AppBar(
-          title: new Text("Main Screen"),
+          title: new Text(widget.title),
         ),
-        body: new GestureDetector(
-          child: new Hero(
-            tag: "imageHero",
-            child: new Image.network(
-              'https://raw.githubusercontent.com/flutter/website/master/_includes/code/layout/lakes/images/lake.jpg',
+        body: new Center(
+          child: new AnimatedOpacity(
+            opacity: _visible ? 1.0 : 0.0,
+            duration: new Duration(milliseconds: 500),
+            child: new Container(
+              width: 200.0,
+              height: 200.0,
+              color: Colors.green,
             ),
           ),
-          onTap: (){
-            Navigator.push(
-              context,
-              new MaterialPageRoute(
-                builder: (context) => new DetailScreen(),
-              ));
-          },
         ),
-      );
-    }
-}
-
-class DetailScreen extends StatelessWidget {
-
-  @override
-    Widget build(BuildContext context) {
-      return new Scaffold(
-        body: new GestureDetector(
-          onTap: (){
-            Navigator.pop(context);
+        floatingActionButton: new FloatingActionButton(
+          onPressed: (){
+            setState((){
+              _visible = !_visible;
+            });
           },
-          child: new Center(
-            child: new Hero(
-              tag: "imageHero",
-              child: new Image.network(
-                'https://raw.githubusercontent.com/flutter/website/master/_includes/code/layout/lakes/images/lake.jpg',
-              ),
-            ),
-          ),
+          tooltip: "Toggle Opacity",
+          child: new Icon(Icons.flip),
         ),
       );
     }
