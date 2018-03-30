@@ -1,81 +1,77 @@
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:flutter/foundation.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(new MyApp());
 
-class MyApp extends StatelessWidget{
-  final title = "WebSocket Demo";
+class MyApp extends StatelessWidget {
   @override
-    Widget build(BuildContext context) {
-      return new MaterialApp(
-        title: title,
-        home: new MyHomePage(
-          title: title,
-          channel: new IOWebSocketChannel.connect("ws://echo.websocket.org"),
-        ),
-      );
-    }
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: "Shared preferences demo",
+      home: new MyHomePage(title: "Shared preferences demo"),
+      theme: new ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+    );
+  }
 }
 
 class MyHomePage extends StatefulWidget {
-  final title;
-  final WebSocketChannel channel;
-  MyHomePage({Key key, this.title, this.channel}):super(key: key);
+  final String title;
+  MyHomePage({Key key, this.title}) : super(key: key);
   @override
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  TextEditingController _controller = new TextEditingController();
+  int _counter = 0;
+
   @override
-    Widget build(BuildContext context) {
-      return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(widget.title),
-        ),
-        body: new Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              new Form(
-                child: new TextFormField(
-                  controller: _controller,
-                  decoration: new InputDecoration(labelText: "Send a message"),
-                ),
-              ),
-              new StreamBuilder<String>(
-                stream: widget.channel.stream,
-                builder: (context, snapshot){
-                  return new Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24.0),
-                    child: new Text(snapshot.hasData ? "${snapshot.data}" : ''),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: new FloatingActionButton(
-          onPressed: _sendMessage,
-          tooltip: "Send message",
-          child: new Icon(Icons.send),
-        ),
-      );
-    }
+  void initState() {
+    super.initState();
+    _loadCounter();
+  }
 
-    void _sendMessage() {
-      if (_controller.text.isNotEmpty) {
-        widget.channel.sink.add(_controller.text);
-        _controller.clear();
-      }
-    }
+  _loadCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _counter = (prefs.getInt('counter') ?? 0);
+    });
+  }
 
-    @override
-      void dispose() {
-        widget.channel.sink.close();
-        super.dispose();
-      }
+  _incrementCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _counter = (prefs.getInt('counter') ?? 0) + 1;
+    setState((){
+      _counter;
+    });
+    prefs.setInt('counter', _counter);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text(widget.title),
+      ),
+      body: new Center(
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Text(
+              'You have pushed the button this many times:',
+            ),
+            new Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.display1,
+            )
+          ],
+        ),
+      ),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: _incrementCounter,
+        child: new Icon(Icons.add),
+      ),
+    );
+  }
 }
